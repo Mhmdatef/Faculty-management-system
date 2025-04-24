@@ -1,0 +1,898 @@
+{
+	"info": {
+		"_postman_id": "685e1464-80fa-4a1e-b699-deddef8558c7",
+		"name": "facultu managment system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38530072"
+	},
+	"item": [
+		{
+			"name": "students",
+			"item": [
+				{
+					"name": "getOneStudentById",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/students/67d8b12c50b0dbfdab989008",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"67d8b12c50b0dbfdab989008"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "name,GPA,Courses",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getallStudebtDorted",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ahmed Ali\",\r\n    \"level\": 2,\r\n    \"studentID\": 1001,\r\n    \"totalCreditsCompleted\": 30,\r\n    \"email\": \"ahmed.ali@example.com\",\r\n    \"phone\": \"01012345678\",\r\n    \"dateOfBirth\": \"2003-05-15\",\r\n    \"gender\": \"Male\",\r\n    \"department\": \"Computer Science\"\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/students?sort=-GPA",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"students"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "-GPA"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateOneStudent",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"GPA\": 2.9\r\n \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/students/67d64ce2a85459491f537b90",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"67d64ce2a85459491f537b90"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteOneStudent",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/students/67d64ce2a85459491f537b8e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"67d64ce2a85459491f537b8e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addOneStudent",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n  {\r\n    \"name\": \"Ahmed Khaled\",\r\n    \"level\": 2,\r\n    \"studentID\": 210004320,\r\n    \"totalCreditsCompleted\": 45,\r\n    \"email\": \"ahmed.mohamed4322@example.com\",\r\n    \"phone\": \"01012345678\",\r\n    \"dateOfBirth\": \"2003-02-15T00:00:00.000Z\",\r\n    \"gender\": \"Male\",\r\n    \"department\": \"67d8e11b19fd3ca888f8c408\",\r\n    \"GPA\": 3.5\r\n    ,\"registerdCourses\":[\"67e5dae2a1c99b78218843cd\"]\r\n  }\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"students"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "staff",
+			"item": [
+				{
+					"name": "addNewStaff",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"name\": \"Test Control\",\r\n    \"email\": \"control_test@example.com\",\r\n    \"universityEmail\": \"control@university.edu\",\r\n    \"phoneNumber\": \"01010000001\",\r\n    \"role\": \"control\",\r\n    \"password\": \"123\",\r\n    \"passwordConfirm\": \"123\"\r\n  },\r\n  {\r\n    \"name\": \"Test Student Affairs\",\r\n    \"email\": \"affairs_test@example.com\",\r\n    \"universityEmail\": \"affairs@university.edu\",\r\n    \"phoneNumber\": \"01010000002\",\r\n    \"role\": \"student_affairs\",\r\n    \"password\": \"123\",\r\n    \"passwordConfirm\": \"123\"\r\n  },\r\n  {\r\n    \"name\": \"Test Activity Staff\",\r\n    \"email\": \"activity_test@example.com\",\r\n    \"universityEmail\": \"activity@university.edu\",\r\n    \"phoneNumber\": \"01010000003\",\r\n    \"role\": \"activity_staff\",\r\n    \"password\": \"123\",\r\n    \"passwordConfirm\": \"123\"\r\n  },\r\n  {\r\n    \"name\": \"Extra Test Staff\",\r\n    \"email\": \"extra_test@example.com\",\r\n    \"universityEmail\": \"extra@university.edu\",\r\n    \"phoneNumber\": \"01010000004\",\r\n    \"role\": \"student_affairs\",\r\n    \"password\": \"123\",\r\n    \"passwordConfirm\": \"123\"\r\n  }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/staff",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"staff"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllStaff",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/staff?sort=role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"staff"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "role"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOneStaff",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/staff/67d8c544e77ab76b2d977daf?fields=name,email,role",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"staff",
+								"67d8c544e77ab76b2d977daf"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "name,email,role"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateOneStaff",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"mohamed atef\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/staff/67d8c544e77ab76b2d977daf",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"staff",
+								"67d8c544e77ab76b2d977daf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteOneStudent",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/staff/67f85cbbed642489264f6c5f",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"staff",
+								"67f85cbbed642489264f6c5f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "log in",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"jwt\", pm.response.json().token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {   \"email\": \"control_test@example.com\",\r\n    \"password\": \"123\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "courses",
+			"item": [
+				{
+					"name": "getAllCourses",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/courses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOneCourseByID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/courses/67d8dd01fb4072f712cb1f88?fields=name",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"courses",
+								"67d8dd01fb4072f712cb1f88"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "name"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteCourse",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/courses/67d8dd01fb4072f712cb1f88",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"courses",
+								"67d8dd01fb4072f712cb1f88"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateOneCourse",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"networks\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/courses/67d8dd01fb4072f712cb1f89",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"courses",
+								"67d8dd01fb4072f712cb1f89"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addNewCourse",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/courses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"courses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "department",
+			"item": [
+				{
+					"name": "deleteOneDept",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/departments/67d8e1a519fd3ca888f8c427",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"departments",
+								"67d8e1a519fd3ca888f8c427"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateOneDept",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"headOfDepartment\": \"Dr. Mohamed Atef\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/departments/67d8e11b19fd3ca888f8c408",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"departments",
+								"67d8e11b19fd3ca888f8c408"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOneDept",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/departments/67d8e1a519fd3ca888f8c427",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"departments",
+								"67d8e1a519fd3ca888f8c427"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllDepts",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/departments?sort=name",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"departments"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "name"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addNewDept",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"name\": \"Computer Science\",\r\n    \"headOfDepartment\": \"Dr. Ahmed Hassan\"\r\n  },\r\n  {\r\n    \"name\": \"Artificial Intelligence\",\r\n    \"headOfDepartment\": \"Dr. Mona Ali\"\r\n  },\r\n  {\r\n    \"name\": \"Data Science\",\r\n    \"headOfDepartment\": \"Dr. Khaled Mahmoud\"\r\n  },\r\n  {\r\n    \"name\": \"Scientific Computing\",\r\n    \"headOfDepartment\": \"Dr. Hani Youssef\"\r\n  },\r\n  {\r\n    \"name\": \"General Studies\",\r\n    \"headOfDepartment\": \"Dr. Sarah Adel\"\r\n  }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/departments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"departments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Activities",
+			"item": [
+				{
+					"name": "addActifity",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"studentId\": \"STU12345\",\r\n        \"description\": \"شارك في بطولة كرة القدم\",\r\n        \"type\": \"sports\"\r\n    },\r\n    {\r\n        \"studentId\": \"STU67890\",\r\n        \"description\": \"حضر ندوة عن الذكاء الاصطناعي\",\r\n        \"type\": \"academic\"\r\n    },\r\n    {\r\n        \"studentId\": \"STU54321\",\r\n        \"description\": \"شارك في مسابقة الشعر\",\r\n        \"type\": \"cultural\"\r\n    },\r\n    {\r\n        \"studentId\": \"STU98765\",\r\n        \"description\": \"تطوع في حملة تنظيف الجامعة\",\r\n        \"type\": \"other\"\r\n    },\r\n    {\r\n        \"studentId\": \"STU24680\",\r\n        \"description\": \"حصل على المركز الأول في الأولمبياد العلمية\",\r\n        \"type\": \"academic\"\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/activities",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllActvities",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/activities",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetOneactivitie",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"type\":\"other\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/activities/67d925b97440ce6b4e7a43a6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"activities",
+								"67d925b97440ce6b4e7a43a6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateOneactivity",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"type\":\"other\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/activities/67d925b97440ce6b4e7a43a6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"activities",
+								"67d925b97440ce6b4e7a43a6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteOneActivity",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/api/v1/activities/67d925b97440ce6b4e7a43a6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"activities",
+								"67d925b97440ce6b4e7a43a6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "registered-courses",
+			"item": [
+				{
+					"name": "add register course",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"student\" : \"67e5dbe0af095325d7913cc7\",\r\n    \"courses\" : [\"67d8dd01fb4072f712cb1f8b\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/v1/registeredCourses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"v1",
+								"registeredCourses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "completedCourses",
+			"item": [
+				{
+					"name": "addCompleteCourse",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
