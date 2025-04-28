@@ -1,18 +1,39 @@
 const express = require('express');
 const morgan = require('morgan');
-const studentRouter=require('./Routes/studentRoutes')
-const staffRouter=require('./Routes/staffRoutes')
-const courseRoutes = require('./Routes/courseRoutes');
-const departmentRoutes=require('./Routes/departmentRoutes')
-const activityRoutes = require('./Routes/activityRoutes');
-const registeredCoursesRoutes = require('./Routes/registeredCourcesRoutes')
-const completedCourseRoutes = require('./Routes/CompletedCourseRoutes')
-const authRoutes = require('./Routes/authRoutes')
+const swaggerJSDoc = require('swagger-jsdoc');  // استيراد الحزمة الخاصة بالتوثيق
+const swaggerUi = require('swagger-ui-express');  // استيراد الحزمة الخاصة بعرض الـ UI للتوثيق
 
+const studentRouter = require('./Routes/studentRoutes');
+const staffRouter = require('./Routes/staffRoutes');
+const courseRoutes = require('./Routes/courseRoutes');
+const departmentRoutes = require('./Routes/departmentRoutes');
+const activityRoutes = require('./Routes/activityRoutes');
+const registeredCoursesRoutes = require('./Routes/registeredCourcesRoutes');
+const completedCourseRoutes = require('./Routes/completedCourseRoutes');
+const authRoutes = require('./Routes/authRoutes');
 
 const app = express();
 
-// 1) MIDDLEWARES
+// إعدادات Swagger
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Faculty Management System API',
+      version: '1.0.0',
+      description: 'API Documentation for Faculty Management System',
+    },
+  },
+  apis: ['./Routes/*.js'],  // المسار الذي يحتوي على التوثيق في Routes
+};
+
+// إنشاء التوثيق باستخدام swagger-jsdoc
+const swaggerDocs = swaggerJSDoc(swaggerOptions);
+
+// إعداد المسار لعرض التوثيق على الـ UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Middlewares
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
@@ -20,19 +41,9 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
-app.use((req, res, next) => {
-  console.log('Hello from the middleware 👋');
-  next();
-});
-
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
-
-// 3) ROUTES
-app.use('/api/v1/students',studentRouter)
-app.use('/api/v1/staff',staffRouter)
+// 3) Routes
+app.use('/api/v1/students', studentRouter);
+app.use('/api/v1/staff', staffRouter);
 app.use('/api/v1/courses', courseRoutes);
 app.use('/api/v1/departments', departmentRoutes);
 app.use('/api/v1/activities', activityRoutes);

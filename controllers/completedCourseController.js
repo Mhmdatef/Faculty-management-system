@@ -36,26 +36,26 @@ exports.addcompletedCourse = async (req, res) => {
 };
 
 
-exports.getAllcompletedCourse = async (req, res) => {
-    try {
-        const features = new APIFeatures(completedCourse.find(), req.query)
-            .filter()
-            .limitFields()
-            .paginate()
-            .sort();
-        const completedCourse = await features.query;
+// exports.getAllcompletedCourse = async (req, res) => {
+//     try {
+//         const features = new APIFeatures(completedCourse.find(), req.query)
+//             .filter()
+//             .limitFields()
+//             .paginate()
+//             .sort();
+//         const completedCourse = await features.query;
 
-        res.status(200).json({
-            status: 'success',
-            results: completedCourse.length,
-            data: { completedCourse }
-        });
-    } catch (err) {
-        res.status(400).json({
-            status: 'fail',
-            message: err.message
-        });
-    }
-};
+//         res.status(200).json({
+//             status: 'success',
+//             results: completedCourse.length,
+//             data: { completedCourse }
+//         });
+//     } catch (err) {
+//         res.status(400).json({
+//             status: 'fail',
+//             message: err.message
+//         });
+//     }
+// };
 
 
