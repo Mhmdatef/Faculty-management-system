@@ -26,17 +26,17 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             required:
- *               - activityType
+ *               - type
  *               - activityDescription
- *               - studentId
+ *               - student
  *             properties:
- *               activityType:
+ *               type:
  *                 type: string
  *                 description: Type of the activity (e.g., Sports, Art, Science Club)
- *               activityDescription:
+ *               description:
  *                 type: string
  *                 description: A description of the activity
- *               studentId:
+ *               student:
  *                 type: string
  *                 description: ID of the student associated with the activity
  *     responses:
@@ -58,7 +58,7 @@ const router = express.Router();
  */
 router.route('/')
     .post(activityController.addActivity)
-    .get(middleware.protect, middleware.restrictTo("activity_staff"), activityController.getAllActivities);
+    .get( activityController.getAllActivities);
 
 /**
  * @swagger
@@ -136,8 +136,8 @@ router.route('/')
  *         description: Activity not found
  */
 router.route('/:id')
-    .get(middleware.protect, middleware.restrictTo("activity_staff"), activityController.getOneActivityByID)
-    .patch(middleware.protect, middleware.restrictTo("activity_staff"), activityController.updateActivity)
-    .delete(middleware.protect, middleware.restrictTo("activity_staff"), activityController.deleteActivity);
+    .get( activityController.getOneActivityByID)
+    .patch( activityController.updateActivity)
+    .delete( activityController.deleteActivity);
 
 module.exports = router;

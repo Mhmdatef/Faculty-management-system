@@ -1,6 +1,7 @@
 const express = require('express');
 const middleware = require('./../middleware/protect');
 const studentController = require('../controllers/student-controller');
+const multer = require('multer');
 const router = express.Router();
 
 /**
@@ -12,7 +13,9 @@ const router = express.Router();
 
 /**
  * @swagger
- * /students:
+/**
+ * @swagger
+ * /api/v1/students:
  *   post:
  *     summary: Add a new student
  *     tags: [Students]
@@ -25,59 +28,44 @@ const router = express.Router();
  *             properties:
  *               name:
  *                 type: string
- *                 description: The name of the student
  *               level:
  *                 type: number
- *                 description: The level of the student
  *               studentID:
  *                 type: number
- *                 description: The unique student ID
  *               totalCreditsCompleted:
  *                 type: number
- *                 description: The total credits the student has completed
  *               email:
  *                 type: string
- *                 description: The student's email
  *               password:
  *                 type: string
- *                 description: The password for the student
  *               passwordConfirm:
  *                 type: string
- *                 description: The confirmation for the student's password
  *               phone:
  *                 type: string
- *                 description: The student's phone number
  *               dateOfBirth:
  *                 type: string
  *                 format: date
- *                 description: The student's date of birth
  *               gender:
  *                 type: string
- *                 description: The student's gender
- *                 enum:
- *                   - Male
- *                   - Female
+ *                 enum: [Male, Female]
+ *               registerdCourses:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
  *       201:
  *         description: The student was successfully created.
  *       400:
  *         description: Validation error.
- *   get:
- *     summary: Get all students
- *     tags: [Students]
- *     responses:
- *       200:
- *         description: List of all students.
- *       400:
- *         description: Error fetching students.
  */
+
 router.route('/')
   .post(middleware.protect, middleware.restrictTo("student_affairs"), studentController.addOneStudent)
-  .get(middleware.protect, middleware.restrictTo("student_affairs"), studentController.getAllStudents);
+  .get( studentController.getAllStudents);
 
 /**
  * @swagger
- * /students/{id}:
+ * /api/v1/students/{id}:
  *   get:
  *     summary: Get a student by ID
  *     tags: [Students]
@@ -90,7 +78,7 @@ router.route('/')
  *           type: string
  *     responses:
  *       200:
- *         description: The student details.
+ *         description: The student details.  
  *       404:
  *         description: Student not found.
  *   patch:
@@ -168,7 +156,7 @@ router.route('/:id')
 
 /**
  * @swagger
- * /students/login:
+ * /api/v1/students/login:
  *   post:
  *     summary: Log in a student
  *     tags: [Students]
@@ -193,5 +181,32 @@ router.route('/:id')
  */
 router.route('/login')
   .post(studentController.log_in);
+  // إعداد Multer لرفع الملفات
+const upload = multer({ dest: 'uploads/' });
+
+/**
+ * @swagger
+ * /api/v1/students/upload:
+ *   post:
+ *     summary: Upload an Excel file with student data
+ *     tags: [Students]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The Excel file containing student data
+ *     responses:
+ *       200:
+ *         description: Students uploaded successfully
+ *       400:
+ *         description: Bad request or invalid Excel data
+ */
+router.post('/upload', upload.single('file'), studentController.importStudentsFromExcel);
 
 module.exports = router;

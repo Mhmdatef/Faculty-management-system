@@ -24,11 +24,11 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               studentId:
+ *               student:
  *                 type: string
  *                 description: The student's ID who completed the course
  *                 example: "123456"
- *               courseId:
+ *               course:
  *                 type: string
  *                 description: The ID of the completed course
  *                 example: "abc123"
@@ -62,10 +62,10 @@ const router = express.Router();
 //  *               items:
 //  *                 type: object
 //  *                 properties:
-//  *                   studentId:
+//  *                   student:
 //  *                     type: string
 //  *                     description: The ID of the student
-//  *                   courseId:
+//  *                   course:
 //  *                     type: string
 //  *                     description: The ID of the course
 
