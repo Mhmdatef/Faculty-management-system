@@ -176,7 +176,25 @@ exports.importStudentsFromExcel = async (req, res) => {
       const sheet = workbook.Sheets[sheetName];
   
       const data = XLSX.utils.sheet_to_json(sheet);
+      if (!data.length) {
+        return res.status(400).json({ status: 'fail', message: 'Excel sheet is empty' });
+      }
   
+      // التحقق من الأعمدة المطلوبة
+      const sheetHeaders = Object.keys(data[0]);
+      const requiredFields = [
+        'name', 'level', 'studentID', 'email', 'password', 'passwordConfirm',
+        'phone', 'dateOfBirth', 'gender'
+      ];
+  
+      const missingFields = requiredFields.filter(field => !sheetHeaders.includes(field));
+      if (missingFields.length > 0) {
+        fs.unlinkSync(file.path); 
+        return res.status(400).json({
+          status: 'fail',
+          message: `Missing required fields: ${missingFields.join(', ')}`
+        });
+      }
       // إنشاء الطلاب وتخزين النتيجة
       const createdStudents = await Student.insertMany(data);
   
