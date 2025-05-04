@@ -164,43 +164,41 @@ exports.log_in = async (request, response, next) => {
     await createToken(student, 200, response);
 };
 exports.importStudentsFromExcel = async (req, res) => {
+    let file;
     try {
-      const file = req.file;
-  
+      file = req.file;
+
       if (!file) {
         return res.status(400).json({ status: 'fail', message: 'Please upload a file' });
       }
-  
+
       const workbook = XLSX.readFile(file.path);
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-  
+
       const data = XLSX.utils.sheet_to_json(sheet);
       if (!data.length) {
         return res.status(400).json({ status: 'fail', message: 'Excel sheet is empty' });
       }
-  
+
       // التحقق من الأعمدة المطلوبة
       const sheetHeaders = Object.keys(data[0]);
       const requiredFields = [
         'name', 'level', 'studentID', 'email', 'password', 'passwordConfirm',
         'phone', 'dateOfBirth', 'gender'
       ];
-  
+
       const missingFields = requiredFields.filter(field => !sheetHeaders.includes(field));
       if (missingFields.length > 0) {
-        fs.unlinkSync(file.path); 
         return res.status(400).json({
           status: 'fail',
           message: `Missing required fields: ${missingFields.join(', ')}`
         });
       }
+
       // إنشاء الطلاب وتخزين النتيجة
       const createdStudents = await Student.insertMany(data);
-  
-      // حذف الملف بعد المعالجة
-      fs.unlinkSync(file.path);
-  
+
       res.status(201).json({
         status: 'success',
         message: 'Students imported successfully',
@@ -209,8 +207,14 @@ exports.importStudentsFromExcel = async (req, res) => {
           students: createdStudents,
         },
       });
+
+      // حذف الملف بعد المعالجة بنجاح
+      fs.unlinkSync(file.path);
+      
     } catch (err) {
+      // حذف الملف إذا حدث أي خطأ أثناء المعالجة
+      if (file) fs.unlinkSync(file.path); 
+
       res.status(500).json({ status: 'fail', message: err.message });
     }
-  };
-  
+};
