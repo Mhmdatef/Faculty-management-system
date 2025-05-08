@@ -14,7 +14,8 @@ const completedCourseSchema = new mongoose.Schema({
     },  
     student: {
         type: Schema.Types.ObjectId,
-        ref : 'Student'
+        ref : 'Student',
+        required: [true, 'Student is required']
     },}, { timestamps: true });
 
     const CompletedCourse = mongoose.model('CompletedCourse', completedCourseSchema);

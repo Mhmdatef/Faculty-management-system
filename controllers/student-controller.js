@@ -190,10 +190,13 @@ exports.importStudentsFromExcel = async (req, res) => {
 
       const missingFields = requiredFields.filter(field => !sheetHeaders.includes(field));
       if (missingFields.length > 0) {
+        fs.unlinkSync(file.path);
         return res.status(400).json({
           status: 'fail',
           message: `Missing required fields: ${missingFields.join(', ')}`
+          
         });
+
       }
 
       // إنشاء الطلاب وتخزين النتيجة
@@ -217,4 +220,32 @@ exports.importStudentsFromExcel = async (req, res) => {
 
       res.status(500).json({ status: 'fail', message: err.message });
     }
+};
+
+// الدالة التي تقوم بإرجاع الطالب بناءً على الاسم
+exports.getOneStudentByName = async (req, res) => {
+  try {
+    const { name } = req.params; // الحصول على الاسم من باراميتر الـ URL
+
+    // البحث عن الطالب باستخدام الاسم
+    const student = await Student.findOne({ name: name }).populate('completedCourses'); // يمكنك إضافة populate إذا كنت تريد بيانات الكورسات المكتملة
+
+    if (!student) {
+      return res.status(404).json({
+        status: 'fail',
+        message: `Student with name ${name} not found`
+      });
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      data: student
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: 'fail',
+      message: 'Server error, please try again later'
+    });
+  }
 };

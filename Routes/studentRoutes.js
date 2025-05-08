@@ -60,7 +60,7 @@ const router = express.Router();
  */
 
 router.route('/')
-  .post(middleware.protect, middleware.restrictTo("student_affairs"), studentController.addOneStudent)
+  .post( studentController.addOneStudent)
   .get( studentController.getAllStudents);
 
 /**
@@ -149,10 +149,33 @@ router.route('/')
  *       404:
  *         description: Student not found.
  */
+
+/**
+ * @swagger
+ * /api/v1/students/student/{name}:
+ *   get:
+ *     summary: Get a student by name
+ *     tags: [Students]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         description: The student neme
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The student details.  
+ *       404:
+ *         description: Student not found.
+ */
+
+router.get('/student/:name', studentController.getOneStudentByName);
 router.route('/:id')
   .get(studentController.getOneStudentByID)
   .patch(studentController.updateOneStudent)
   .delete(middleware.protect, middleware.restrictTo("student_affairs"), studentController.deleteOneStudent);
+
 
 /**
  * @swagger

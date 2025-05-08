@@ -102,3 +102,30 @@ exports.deleteCourse = async (req, res) => {
         });
     }
 };
+exports.getCourseByName = async (req, res) => {
+    const { name } = req.params; // الحصول على اسم الكورس من الـ URL
+  
+    try {
+      // البحث عن الكورس باستخدام الاسم
+      const course = await Course.findOne({ name });
+  
+      if (!course) {
+        return res.status(404).json({
+          status: 'fail',
+          message: 'Course not found'
+        });
+      }
+  
+      res.status(200).json({
+        status: 'success',
+        data: {
+          course
+        }
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: 'fail',
+        message: err.message
+      });
+    }
+  };

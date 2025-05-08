@@ -185,5 +185,26 @@ router
         middleware.restrictTo("student_affairs"),
         courseController.deleteCourse
     );
+/**
+ * @swagger
+ * /api/v1/courses/course/{name}:
+ *   get:
+ *     summary: Get a course by name
+ *     tags: [Courses]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         description: The course name
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The course details.  
+ *       404:
+ *         description: course not found.
+ */
+
+router.get('/course/:name', courseController.getCourseByName);    
 
 module.exports = router;
