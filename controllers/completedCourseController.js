@@ -6,6 +6,28 @@ const {getExistStudent} = require('./student-controller')
 const XLSX = require('xlsx');
 const fs = require('fs');
 
+exports.getAllCompletedCourses = async (req, res) => {
+    try {
+        const features = new APIFeatures(completedCourse.find(), req.query)
+            .filter()
+            .sort()
+            .limitFields()
+            .paginate();
+
+        const completedCourses = await features.query;
+
+        res.status(200).json({
+            status: 'success',
+            results: completedCourses.length,
+            data: { completedCourses }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+}
 exports.addcompletedCourse = async (req, res) => {
     try {
         const { student } = req.body;
@@ -50,7 +72,6 @@ exports.importCompletedCoursesFromExcel = async (req, res) => {
       const workbook = XLSX.readFile(file.path);
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-  
       const data = XLSX.utils.sheet_to_json(sheet);
   
       if (!data.length) {
@@ -71,7 +92,6 @@ exports.importCompletedCoursesFromExcel = async (req, res) => {
         });
       }
   
-      // التحقق من القيم داخل العمود "grade"
       const allowedGrades = ['A', 'B', 'C', 'D', 'F'];
       const invalidGrades = data.filter(row => !allowedGrades.includes(row.grade));
       if (invalidGrades.length > 0) {
@@ -89,24 +109,22 @@ exports.importCompletedCoursesFromExcel = async (req, res) => {
   
         const student = await Student.findOne({ name: studentName });
         const course = await Course.findOne({ name: courseName });
-  
-        if (!student || !course) {
-          console.warn(`❌ Skipping row: student or course not found - ${studentName}, ${courseName}`);
-          continue;
-        }
-  
         const newCompletedCourse = await completedCourse.create({
           student: student._id,
           course: course._id,
           grade
         });
   
-        student.completedCourses.push(newCompletedCourse._id);
-        await student.save();
+        await Student.updateOne(
+            { _id: student._id },
+            { $push: { completedCourses: newCompletedCourse._id } }
+          );
+          
   
         createdCourses.push(newCompletedCourse);
       }
   
+      fs.unlinkSync(file.path);
       res.status(201).json({
         status: 'success',
         message: 'Completed courses imported successfully',
@@ -114,9 +132,9 @@ exports.importCompletedCoursesFromExcel = async (req, res) => {
         data: { completedCourses: createdCourses }
       });
   
-      fs.unlinkSync(file.path);
     } catch (err) {
       if (file) fs.unlinkSync(file.path);
       res.status(500).json({ status: 'fail', message: err.message });
     }
   };
+  

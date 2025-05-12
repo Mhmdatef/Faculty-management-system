@@ -5,7 +5,7 @@ const completedCourseController = require('../controllers/completedCourseControl
 const router = express.Router();
 
 // إعداد multer لرفع الملفات (تخزين مؤقت في مجلد "uploads")
-const upload = multer({ dest: 'uploads/' });
+const uploads = multer({ dest: 'uploads/' });
 
 /**
  * @swagger
@@ -55,7 +55,7 @@ router
  * @swagger
  * /api/v1/completedCourses/upload:
  *   post:
- *     summary: Import completed courses from Excel file (by course/student name)
+ *     summary: Import completed courses from Excel file
  *     tags: [CompletedCourses]
  *     requestBody:
  *       required: true
@@ -67,16 +67,40 @@ router
  *               file:
  *                 type: string
  *                 format: binary
- *                 description: Excel file (.xlsx) containing completed courses
- *                 example: "completed_courses.xlsx"
+ *                 description: Excel file containing studentName, courseName, and grade
  *     responses:
  *       201:
  *         description: Completed courses imported successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *                 count:
+ *                   type: number
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     completedCourses:
+ *                       type: array
+ *                       items:
+ *                         type: object
  *       400:
- *         description: Bad request - missing fields or invalid data
+ *         description: Bad request (missing fields or invalid grade)
  *       500:
- *         description: Server error while processing the Excel file
+ *         description: Internal server error
  */
-router.post('/upload', upload.single('file'), completedCourseController.importCompletedCoursesFromExcel);
+
+
+router.post('/upload', uploads.single('file'), completedCourseController.importCompletedCoursesFromExcel);
+
+router
+  .route('/')
+  .get(completedCourseController.getAllCompletedCourses)
+
 
 module.exports = router;
