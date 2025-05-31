@@ -1,5 +1,7 @@
 const Student = require('../models/studentModel');
 const APIFeatures = require('./../utils/apiFeatures');
+const  RegisteredCourse = require('../models/registerCourseModel');
+const CompletedCourse = require('../models/completedCourseModel');
 const bcrypt = require('bcryptjs');  // استيراد مكتبة bcrypt
 const createToken = require('./../utils/create.token');
 const XLSX = require('xlsx');
@@ -87,45 +89,42 @@ exports.deleteOneStudent = async (req, res) => {
 };
 
 exports.getOneStudentByID = async (req, res) => {
-    try {
-        const { id } = req.params;
-        let { fields } = req.query;
+  try {
+    const student = await Student.findById(req.params.id).lean();
 
-        let query = Student.findById(id).populate([
-            { path: 'registerdCourses' },
-            { path: 'completedCourses' },
-            { path: 'activities' }
-        ]);
-
-        if (fields) {
-            // تنظيف الحقول
-            const selectedFields = fields.split(',').map(f => f.trim()).join(' ');
-            query = query.select(selectedFields);
-        }
-
-        const student = await query;
-
-        if (!student) {
-            return res.status(404).json({
-                status: "fail",
-                message: "Student not found"
-            });
-        }
-
-        return res.status(200).json({
-            status: 'success',
-            data: { student }
-        });
-
-    } catch (err) {
-        return res.status(400).json({
-            status: 'fail',
-            message: err.message
-        });
+    if (!student) {
+      return res.status(404).json({ status: 'fail', message: 'Student not found' });
     }
+
+    const completedCourses = await CompletedCourse.find({ student: student._id })
+      .populate('course', 'name');
+
+    const registeredCourses = await RegisteredCourse.find({ student: student._id })
+.populate({ path: 'course', select: 'name' })
+
+    const formattedCourses = completedCourses.map(entry => ({
+      courseName: entry.course.name,
+      grade: entry.grade
+    }));
+
+    const formattedRegisteredCourses = registeredCourses.map(entry => ({
+      courseName: entry.course.map(c => c.name),
+    }));
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        ...student,
+        completedCourses: formattedCourses,
+        registerdCourses: formattedRegisteredCourses
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: 'error', message: 'Something went wrong' });
+  }
 };
-
-
 exports.getExistStudent = async (studentId) => {
     try {
         const student  = await Student.findById(studentId)
@@ -138,6 +137,7 @@ exports.getExistStudent = async (studentId) => {
         
     }
 };
+
 exports.log_in = async (request, response, next) => {
     console.log(request.body);
 

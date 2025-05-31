@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const {Schema} = require('mongoose')
-
 const courseSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -28,8 +27,10 @@ const courseSchema = new mongoose.Schema({
         ref: 'Department',
     },
     prerequisites: [{
-        type: String
-    }]
+        type: Schema.Types.ObjectId,
+        ref: 'prerequisite', // Reference to the prerequisite model
+        required: false // Prerequisites are optional
+    }],
 }, { timestamps: true });
 
 const Course = mongoose.model('Course', courseSchema);
