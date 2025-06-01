@@ -135,7 +135,7 @@ exports.getOneStudentByID = async (req, res) => {
       .populate('course')
 
     const registeredCourses = await RegisteredCourse.find({ student: student._id })
-.populate({ path: 'course'})
+.populate({ path: 'courses'})
 const activities = await Activities.find({ student: student._id });
 
     const formattedCourses = completedCourses.map(entry => ({
@@ -151,21 +151,21 @@ const formattedActivities = activities.map(activity => ({
   date: activity.date,
   type: activity.type
 }));
-const formattedRegisteredCourses = registeredCourses.flatMap(entry =>
-  entry.course.map(c => ({
-    courseName: c.name,
-    courseId: c._id,
-    courseCode: c.code,
-    creditHours: c.creditHours,
-  }))
-);
+        const formattedRegistered = registeredCourses.map(entry =>
+          entry.courses.map(c => ({
+            courseName: c.name,
+            courseId: c._id,
+            courseCode: c.code,
+            creditHours: c.creditHours,
+          }))
+        );
 
     res.status(200).json({
       status: 'success',
       data: {
         ...student,
         completedCourses: formattedCourses,
-        registerdCourses: formattedRegisteredCourses
+        registerdCourses: formattedRegistered
         , activities: formattedActivities
       }
     });
@@ -290,7 +290,7 @@ exports.getOneStudentByName = async (req, res) => {
 
 const activities = await Activities.find({ student: student._id });
     const registeredCourses = await RegisteredCourse.find({ student: student._id })
-      .populate('course');
+      .populate('courses');
 
     const formattedCompleted = completedCourses.map(entry => ({
       courseName: entry.course.name,
@@ -306,14 +306,15 @@ const activities = await Activities.find({ student: student._id });
       type: activity.type
     }));
 
-    const formattedRegistered = registeredCourses.flatMap(entry =>
-      entry.course.map(c => ({
-        courseName: c.name,
-        courseId: c._id,
-        courseCode: c.code,
-        creditHours: c.creditHours, 
-      }))
-    );
+      const formattedRegistered = registeredCourses.map(entry =>
+          entry.courses.map(c => ({
+            courseName: c.name,
+            courseId: c._id,
+            courseCode: c.code,
+            creditHours: c.creditHours,
+          }))
+        );
+
 
     res.status(200).json({
       status: 'success',

@@ -76,7 +76,8 @@ router
  *         description: Bad request
  */
     .get(
-
+        middleware.protect,
+        middleware.restrictTo("student_affairs"),
         courseController.getAllCourses
     );
 
