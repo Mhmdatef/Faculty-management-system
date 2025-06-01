@@ -58,6 +58,44 @@ const router = express.Router();
  *       400:
  *         description: Validation error.
  */
+/**
+ * @swagger
+ * /api/v1/students:
+ *   get:
+ *     summary: Get all students
+ *     tags: [Students]
+ *     responses:
+ *       200:
+ *         description: A list of all students
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   level:
+ *                     type: number
+ *                   studentID:
+ *                     type: number
+ *                   totalCreditsCompleted:
+ *                     type: number
+ *                   email:
+ *                     type: string
+ *                   phone:
+ *                     type: string
+ *                   gender:
+ *                     type: string
+ *                   dateOfBirth:
+ *                     type: string
+ *                     format: date
+ *       500:
+ *         description: Server error
+ */
 
 router.route('/')
   .post( studentController.addOneStudent)
@@ -174,7 +212,7 @@ router.get('/student/:name', studentController.getOneStudentByName);
 router.route('/:id')
   .get(studentController.getOneStudentByID)
   .patch(studentController.updateOneStudent)
-  .delete(middleware.protect, middleware.restrictTo("student_affairs"), studentController.deleteOneStudent);
+  .delete( studentController.deleteOneStudent);
 
 
 /**
