@@ -16,7 +16,14 @@ const completedCourseSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref : 'Student',
         required: [true, 'Student is required']
-    },}, { timestamps: true });
+    },
+completedDate: {
+        type: Date,
+        default: Date.now
+    }
+}
+    
+    , { timestamps: true });
 
     const CompletedCourse = mongoose.model('CompletedCourse', completedCourseSchema);
     module.exports = CompletedCourse;

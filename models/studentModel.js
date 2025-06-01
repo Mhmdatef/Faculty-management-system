@@ -79,7 +79,7 @@ const studentSchema = new mongoose.Schema(
      type : Schema.Types.ObjectId,
      ref : 'Department'
     },
-    registerdCourses: [{
+    registeredCourses: [{
       type: Schema.Types.ObjectId,
       ref: "RegisteredCourse",
       required : false

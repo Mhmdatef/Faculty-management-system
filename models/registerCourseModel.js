@@ -5,7 +5,7 @@ const registeredCourseSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref : 'Student'
     },
-   course :[{
+   courses :[{
     type: Schema.Types.ObjectId,
     ref:'Course'
 }] 

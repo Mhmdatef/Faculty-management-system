@@ -1,4 +1,4 @@
-const registerdCourses = require('../models/registerCourseModel');
+const registeredCourses = require('../models/registerCourseModel');
 const APIFeatures = require('../utils/apiFeatures');
 const { getExistStudent } = require('./student-controller');
 
@@ -19,10 +19,10 @@ exports.addCourse = async (req, res) => {
         }
 
         // إضافة الدورة إلى قاعدة البيانات
-        const newCourse = await registerdCourses.create(req.body);
+        const newCourse = await registeredCourses.create(req.body);
 
         // إضافة الدورة الجديدة إلى قائمة الدورات المسجلة الخاصة بالطالب
-        exist_student.registerdCourses.push(newCourse._id);  // تأكد من إضافة ObjectId فقط
+        exist_student.registeredCourses.push(newCourse._id);  // تأكد من إضافة ObjectId فقط
 
         // حفظ التعديلات على الطالب
         await exist_student.save();
@@ -43,19 +43,19 @@ exports.addCourse = async (req, res) => {
 exports.getAllCourses = async (req, res) => {
     try {
         // تنفيذ ميزات API مثل التصفية، التحديد، التصفية، والتحديد
-        const features = new APIFeatures(registerdCourses.find(), req.query)
+        const features = new APIFeatures(registeredCourses.find(), req.query)
             .filter()
             .limitFields()
             .paginate()
             .sort();
         
         // استرجاع الدورات المسجلة
-        const registerdCourses = await features.query;
+        const registeredCourses = await features.query;
 
         res.status(200).json({
             status: 'success',
-            results: registerdCourses.length,
-            data: { registerdCourses }
+            results: registeredCourses.length,
+            data: { registeredCourses }
         });
     } catch (err) {
         res.status(400).json({
@@ -66,7 +66,7 @@ exports.getAllCourses = async (req, res) => {
 };
 exports.getregisterdCourse = async (req, res) => {
     try {
-        const course = await registerdCourses.findById(req.params.id);
+        const course = await registeredCourses.findById(req.params.id);
         if (!course) {
             return res.status(404).json({
                 status: 'fail',
@@ -86,7 +86,7 @@ exports.getregisterdCourse = async (req, res) => {
 };
 exports.updateregisterdCourse = async (req, res) => {
     try {
-        const course = await registerdCourses.findByIdAndUpdate(req.params.id, req.body, {
+        const course = await registeredCourses.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         });
@@ -110,7 +110,7 @@ exports.updateregisterdCourse = async (req, res) => {
 
 exports.deleteRegisteredCourseByStudentAndCourse = async (studentId, courseId) => {
   try {
-    await registerdCourses.findOneAndDelete({ student: studentId, course: courseId });
+    await registeredCourses.findOneAndDelete({ student: studentId, course: courseId });
   } catch (err) {
     console.error(`Error deleting registered course for student ${studentId}, course ${courseId}:`, err.message);
   }
@@ -119,7 +119,7 @@ exports.deleteRegisteredCourseByStudentAndCourse = async (studentId, courseId) =
 // الدالة الأصلية لو كنت بتستخدمها في الراوت
 exports.deleteregisterdCourse = async (req, res) => {
   try {
-    const course = await registerdCourses.findByIdAndDelete(req.params.id);
+    const course = await registeredCourses.findByIdAndDelete(req.params.id);
     if (!course) {
       return res.status(404).json({
         status: 'fail',
