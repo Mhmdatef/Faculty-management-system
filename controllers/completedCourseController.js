@@ -2,6 +2,7 @@ const completedCourse = require('../models/completedCourseModel');
 const APIFeatures = require('../utils/apiFeatures');
 const Course = require('../models/courseModel');
 const Student = require('../models/studentModel');
+
 const { deleteRegisteredCourseByStudentAndCourse } = require('./registeredCoursesController');
 const { getExistStudent } = require('./student-controller');
 const XLSX = require('xlsx');
@@ -26,7 +27,6 @@ exports.getAllCompletedCourses = async (req, res) => {
     res.status(400).json({ status: 'fail', message: err.message });
   }
 };
-
 exports.addcompletedCourse = async (req, res) => {
   try {
     const { student, course, grade } = req.body;
@@ -39,6 +39,20 @@ exports.addcompletedCourse = async (req, res) => {
         message: "Student not found"
       });
     }
+
+    // التحقق إذا الطالب أنهى هذا المقرر من قبل
+    const alreadyCompleted = await completedCourse.findOne({
+      student: student,
+      course: course
+    });
+    if (alreadyCompleted) {
+      return res.status(400).json({
+        status: 'fail',
+        message: "Course already completed"
+      });
+    }
+
+    
 
     // جلب بيانات المقرر
     const exist_course = await Course.findById(course);
@@ -67,7 +81,7 @@ exports.addcompletedCourse = async (req, res) => {
 
     await exist_student.save();
 
-    // حذف المقرر من جدول المسجلين لهذا الطالب
+    // حذف المقرر من جدول المسجلين لهذا الطالب (لو موجود)
     await deleteRegisteredCourseByStudentAndCourse(exist_student._id, exist_course._id);
 
     res.status(201).json({
@@ -78,6 +92,7 @@ exports.addcompletedCourse = async (req, res) => {
     res.status(400).json({ status: 'fail', message: err.message });
   }
 };
+
 
 exports.importCompletedCoursesFromExcel = async (req, res) => {
   let file;
@@ -131,6 +146,16 @@ exports.importCompletedCoursesFromExcel = async (req, res) => {
         console.warn(`Missing: ${!student ? 'Student' : ''} ${!course ? 'Course' : ''} => ${studentName}, ${courseName}`);
         continue;
       }
+       // تحقق إذا الطالب أنهى الكورس من قبل
+  const alreadyCompleted = await completedCourse.findOne({
+    student: student._id,
+    course: course._id
+  });
+  if (alreadyCompleted) {
+    console.warn(`Course already completed by student: ${studentName} - ${courseName}`);
+    continue;
+  }
+
 
       if (grade !== 'F') {
         student.totalCreditsCompleted += course.creditHours;
@@ -148,6 +173,7 @@ exports.importCompletedCoursesFromExcel = async (req, res) => {
         { _id: student._id },
         { $push: { completedCourses: newCompletedCourse._id } }
       );
+  
 
       await deleteRegisteredCourseByStudentAndCourse(student._id, course._id);
 

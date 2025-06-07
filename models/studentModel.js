@@ -83,6 +83,8 @@ const studentSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "RegisteredCourse",
       required : false
+      ,
+      unique: true // Ensure each registered course is unique
     }],
     GPA: {
       type: Number,
@@ -102,6 +104,7 @@ const studentSchema = new mongoose.Schema(
       {
         type: Schema.Types.ObjectId,
         ref: 'CompletedCourse',
+        unique: true, // Ensure each completed course is unique
       }
     ]
     ,   

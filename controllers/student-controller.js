@@ -44,14 +44,14 @@ exports.getAllStudents = async (req, res) => {
           courseCode: entry.course.code
         }));
 
-        const formattedRegistered = registeredCourses.map(entry =>
-          entry.courses.map(c => ({
-            courseName: c.name,
-            courseId: c._id,
-            courseCode: c.code,
-            creditHours: c.creditHours,
-          }))
-        );
+const formattedRegistered = registeredCourses.map(entry => ({
+  courseName: entry.courses.name,
+  courseId: entry.courses._id,
+  courseCode: entry.courses.code,
+  creditHours: entry.courses.creditHours,
+}));
+
+
         const formattedActivities = activities.map(activity => ({
           activityName: activity.name,
           description: activity.description,

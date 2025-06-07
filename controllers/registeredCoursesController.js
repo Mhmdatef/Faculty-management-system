@@ -4,13 +4,17 @@ const { getExistStudent } = require('./student-controller');
 
 exports.addCourse = async (req, res) => {
     try {
-        const { student } = req.body;
-        console.log(student);
-        
-        // تحقق من وجود الطالب في قاعدة البيانات
+        const { student, courses } = req.body;  // جلب student و course
+
+        if (!student || !courses) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'student and course fields are required'
+            });
+        }
+
         let exist_student = await getExistStudent(student);
-        
-        // إذا لم يكن الطالب موجودًا، ارجع بخطأ 404
+
         if (!exist_student) {
             return res.status(404).json({
                 status: 'fail',
@@ -18,16 +22,23 @@ exports.addCourse = async (req, res) => {
             });
         }
 
-        // إضافة الدورة إلى قاعدة البيانات
+        const alreadyRegistered = await registeredCourses.findOne({
+            student: student,
+            courses: courses
+        });
+
+        if (alreadyRegistered) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Course already registered'
+            });
+        }
+
         const newCourse = await registeredCourses.create(req.body);
 
-        // إضافة الدورة الجديدة إلى قائمة الدورات المسجلة الخاصة بالطالب
-        exist_student.registeredCourses.push(newCourse._id);  // تأكد من إضافة ObjectId فقط
-
-        // حفظ التعديلات على الطالب
+        exist_student.registeredCourses.push(newCourse._id);
         await exist_student.save();
 
-        // إرجاع استجابة ناجحة
         res.status(201).json({
             status: 'success',
             data: { course: newCourse }
@@ -40,22 +51,47 @@ exports.addCourse = async (req, res) => {
     }
 };
 
+
+exports.deleteRegisteredCourseByStudentAndCourse = async (studentId, courseId) => {
+    try {
+        let exist_student = await getExistStudent(studentId);
+        if (!exist_student) {
+            throw new Error('Student not found');
+        }
+
+        const deletedCourse = await registeredCourses.findOneAndDelete({
+            student: studentId,
+            courses: courseId
+        });
+
+        if (!deletedCourse) {
+            throw new Error('No registered course found with that student and course');
+        }
+
+        exist_student.registeredCourses.pull(deletedCourse._id);
+        await exist_student.save();
+
+        return true;
+    } catch (err) {
+        console.error('Error deleting registered course:', err.message);
+        throw err;
+    }
+};
+
 exports.getAllCourses = async (req, res) => {
     try {
-        // تنفيذ ميزات API مثل التصفية، التحديد، التصفية، والتحديد
         const features = new APIFeatures(registeredCourses.find(), req.query)
             .filter()
             .limitFields()
             .paginate()
             .sort();
-        
-        // استرجاع الدورات المسجلة
-        const registeredCourses = await features.query;
+
+        const registeredCoursesList = await features.query;
 
         res.status(200).json({
             status: 'success',
-            results: registeredCourses.length,
-            data: { registeredCourses }
+            results: registeredCoursesList.length,
+            data: { registeredCourses: registeredCoursesList }
         });
     } catch (err) {
         res.status(400).json({
@@ -64,6 +100,7 @@ exports.getAllCourses = async (req, res) => {
         });
     }
 };
+
 exports.getregisterdCourse = async (req, res) => {
     try {
         const course = await registeredCourses.findById(req.params.id);
@@ -84,6 +121,7 @@ exports.getregisterdCourse = async (req, res) => {
         });
     }
 };
+
 exports.updateregisterdCourse = async (req, res) => {
     try {
         const course = await registeredCourses.findByIdAndUpdate(req.params.id, req.body, {
@@ -108,33 +146,17 @@ exports.updateregisterdCourse = async (req, res) => {
     }
 };
 
-exports.deleteRegisteredCourseByStudentAndCourse = async (studentId, courseId) => {
-  try {
-    await registeredCourses.findOneAndDelete({ student: studentId, course: courseId });
-  } catch (err) {
-    console.error(`Error deleting registered course for student ${studentId}, course ${courseId}:`, err.message);
-  }
-};
-
-// الدالة الأصلية لو كنت بتستخدمها في الراوت
 exports.deleteregisterdCourse = async (req, res) => {
-  try {
-    const course = await registeredCourses.findByIdAndDelete(req.params.id);
-    if (!course) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'No registerdcourse found with that ID'
-      });
+    try {
+        const course = await registeredCourses.findByIdAndDelete(req.params.id);
+        if (!course) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'No registered course found with that ID'
+            });
+        }
+        res.status(204).json({ status: 'success', data: null });
+    } catch (err) {
+        res.status(400).json({ status: 'fail', message: err.message });
     }
-    res.status(204).json({ status: 'success', data: null });
-  } catch (err) {
-    res.status(400).json({ status: 'fail', message: err.message });
-  }
 };
-/*
-
-
-i will add new table in the database called remindercourses and when i add new completed course i should remove it from the registerdcourse table and register it in the registerdCourses table
-i should add new api to recommend the courses to the student depending on the prerequisites courses and this semester
-
-*/

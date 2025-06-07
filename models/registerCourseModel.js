@@ -5,11 +5,10 @@ const registeredCourseSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref : 'Student'
     },
-   courses :[{
+   courses :{
     type: Schema.Types.ObjectId,
-    ref:'Course'
-}] 
-    
+    ref:'Course',
+}
 }
 
 ,    { timestamps: true }
