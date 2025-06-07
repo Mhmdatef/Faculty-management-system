@@ -29,8 +29,9 @@ exports.getAllCompletedCourses = async (req, res) => {
 
 exports.addcompletedCourse = async (req, res) => {
   try {
-    const { student, course } = req.body;
+    const { student, course, grade } = req.body;
 
+    // جلب بيانات الطالب
     let exist_student = await getExistStudent(student);
     if (!exist_student) {
       return res.status(404).json({
@@ -39,12 +40,35 @@ exports.addcompletedCourse = async (req, res) => {
       });
     }
 
-    const newcompletedCourse = await completedCourse.create(req.body);
+    // جلب بيانات المقرر
+    const exist_course = await Course.findById(course);
+    if (!exist_course) {
+      return res.status(404).json({
+        status: 'fail',
+        message: "Course not found"
+      });
+    }
 
+    // إنشاء سجل المقرر المكتمل
+    const newcompletedCourse = await completedCourse.create({
+      student: exist_student._id,
+      course: exist_course._id,
+      grade
+    });
+
+    // إضافة المقرر المكتمل للطالب
     exist_student.completedCourses.push(newcompletedCourse._id);
+
+    // تحديث الساعات المكتملة والمتبقية فقط إذا الدرجة ليست F
+    if (grade !== 'F') {
+      exist_student.totalCreditsCompleted += exist_course.creditHours;
+      exist_student.reminderCredits -= exist_course.creditHours;
+    }
+
     await exist_student.save();
 
-    await deleteRegisteredCourseByStudentAndCourse(student, course);
+    // حذف المقرر من جدول المسجلين لهذا الطالب
+    await deleteRegisteredCourseByStudentAndCourse(exist_student._id, exist_course._id);
 
     res.status(201).json({
       status: 'success',
@@ -106,6 +130,12 @@ exports.importCompletedCoursesFromExcel = async (req, res) => {
       if (!student || !course) {
         console.warn(`Missing: ${!student ? 'Student' : ''} ${!course ? 'Course' : ''} => ${studentName}, ${courseName}`);
         continue;
+      }
+
+      if (grade !== 'F') {
+        student.totalCreditsCompleted += course.creditHours;
+        student.reminderCredits -= course.creditHours;
+        await student.save();
       }
 
       const newCompletedCourse = await completedCourse.create({

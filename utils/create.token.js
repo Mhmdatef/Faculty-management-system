@@ -10,7 +10,7 @@ const tokenGenerator = async (id) => {
     return token;
 }
 
-const createToken = async (user, statusCode, response) => {
+exports.createToken = async (user, statusCode, response) => {
     const token = await tokenGenerator(user._id);
 
     
@@ -25,4 +25,3 @@ const createToken = async (user, statusCode, response) => {
     });
 }
 
-module.exports = createToken;

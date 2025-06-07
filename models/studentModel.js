@@ -110,19 +110,28 @@ const studentSchema = new mongoose.Schema(
         type: Schema.Types.ObjectId,
         ref: 'Activity',
       }
-    ]
-    
-    
-  },
-  
+    ],
+    reminderCredits:{
+      type: Number,
+      default: 144,
+      min: [0, '❌ Reminder credits cannot be less than 0'],
+      max: [144, '❌ Reminder credits cannot exceed 144']
+    }
 
-  {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  }
+  },
+
+  
+{
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+}
+
+  
   
 );
+
+
 studentSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     this.password =await bycrypt.hash(this.password, 12);

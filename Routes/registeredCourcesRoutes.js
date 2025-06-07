@@ -11,7 +11,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/registered-courses:
+ * /api/v1/registeredCourses:
  *   post:
  *     summary: Register a student for a course
  *     description: Registers a student for a course by adding the student ID and course IDs.
