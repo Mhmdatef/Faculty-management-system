@@ -25,9 +25,7 @@ const courseSchema = new mongoose.Schema({
     },
     department: {
         type: Schema.Types.ObjectId,
-        ref: 'Department',
-        required: [true, 'Department is required']
-        ,
+        ref: 'Department',        ,
         default: "general"
     },
     prerequisite: [{
