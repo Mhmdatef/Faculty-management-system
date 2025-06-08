@@ -44,8 +44,7 @@ const router = express.Router();
 router
   .route('/')
   .post(
-    middleware.protect,
-    middleware.restrictTo('student_affairs'),
+    
     departmentController.addDepartment
   )
 
@@ -65,8 +64,7 @@ router
  *         description: Bad request
  */
   .get(
-    middleware.protect,
-    middleware.restrictTo('student_affairs'),
+   
     departmentController.getAllDepartments
   );
 
@@ -95,8 +93,7 @@ router
 router
   .route('/:id')
   .get(
-    middleware.protect,
-    middleware.restrictTo('student_affairs'),
+   
     departmentController.getOneDepartmentByID
   )
 
@@ -134,8 +131,7 @@ router
  *         description: Department not found
  */
   .patch(
-    middleware.protect,
-    middleware.restrictTo('student_affairs'),
+
     departmentController.updateDepartment
   )
 
@@ -162,8 +158,7 @@ router
  *         description: Department not found
  */
   .delete(
-    middleware.protect,
-    middleware.restrictTo('student_affairs'),
+   
     departmentController.deleteDepartment
   );
 

@@ -17,7 +17,11 @@ exports.addDepartment = async (req, res) => {
 // ✅ جلب جميع الأقسام
 exports.getAllDepartments = async (req, res) => {
     try {
-        const features = new APIFeatures(Department.find(), req.query).filter().sort().paginate().limitFields();
+        const features = new APIFeatures(Department.find().populate('courses'), req.query)
+            .filter()
+            .sort()
+            .paginate()
+            .limitFields();
         const departments = await features.query;
 
         res.status(200).json({
@@ -30,10 +34,10 @@ exports.getAllDepartments = async (req, res) => {
     }
 };
 
-// ✅ جلب قسم معين عن طريق الـ ID
 exports.getOneDepartmentByID = async (req, res) => {
     try {
-        const features = new APIFeatures(Department.findById(req.params.id), req.query).limitFields();
+        const features = new APIFeatures(Department.findById(req.params.id).populate('courses'), req.query)
+            .limitFields();
         const department = await features.query;
 
         if (!department) {
@@ -49,6 +53,7 @@ exports.getOneDepartmentByID = async (req, res) => {
         res.status(400).json({ status: 'fail', message: 'Invalid Department ID' });
     }
 };
+
 
 // ✅ تحديث بيانات القسم
 exports.updateDepartment = async (req, res) => {

@@ -11,6 +11,8 @@ const activityRoutes = require('./Routes/activityRoutes');
 const registeredCoursesRoutes = require('./Routes/registeredCourcesRoutes');
 const completedCourseRoutes = require('./Routes/completedCourseRoutes');
 const authRoutes = require('./Routes/authRoutes');
+const prerequisiteRoutes = require('./Routes/prerequisiteRoutes');
+
 
 const app = express();
 
@@ -50,5 +52,6 @@ app.use('/api/v1/activities', activityRoutes);
 app.use('/api/v1/registeredCourses', registeredCoursesRoutes);
 app.use('/api/v1/completedCourses', completedCourseRoutes);
 app.use('/api/v1', authRoutes);
+app.use('/api/v1/prerequisites', prerequisiteRoutes);
 
 module.exports = app;

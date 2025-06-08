@@ -12,6 +12,12 @@ const departmentSchema = new mongoose.Schema({
         required: [true, 'Department head is required'],
 
     }
+    ,
+    courses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course',
+        required: false
+    }],
 }, { timestamps: true });
 
 const Department = mongoose.model('Department', departmentSchema);

@@ -4,7 +4,8 @@ const courseSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Course name is required'],
-        trim: true
+        trim: true,
+        unique: true
     },
     code: {
         type: String,
@@ -25,13 +26,17 @@ const courseSchema = new mongoose.Schema({
     department: {
         type: Schema.Types.ObjectId,
         ref: 'Department',
+        required: [true, 'Department is required']
+        ,
+        default: "general"
     },
-    prerequisites: [{
+    prerequisite: [{
         type: Schema.Types.ObjectId,
-        ref: 'prerequisite', // Reference to the prerequisite model
-        required: false // Prerequisites are optional
-    }],
+        ref: 'prerequisite',
+        required: false
+    }]
 }, { timestamps: true });
+
 
 const Course = mongoose.model('Course', courseSchema);
 module.exports = Course;
