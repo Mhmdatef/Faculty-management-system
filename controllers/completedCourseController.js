@@ -172,6 +172,8 @@ exports.importCompletedCoursesFromExcel = async (req, res) => {
       await Student.updateOne(
         { _id: student._id },
         { $push: { completedCourses: newCompletedCourse._id } }
+        
+
       );
   
 

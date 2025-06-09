@@ -30,7 +30,7 @@ const courseSchema = new mongoose.Schema({
     },
     prerequisite: [{
         type: Schema.Types.ObjectId,
-        ref: 'prerequisite',
+        ref: 'Course',
         required: false
     }]
 }, { timestamps: true });

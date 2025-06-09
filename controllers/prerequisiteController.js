@@ -1,35 +1,43 @@
 const Prerequisite = require('../models/prerequisiteModel');
+const Course = require('../models/courseModel');
 
 exports.addPrerequisite = async (req, res) => {
-    try {
-        const { course, prerequisite } = req.body;
+  try {
+    const { course, prerequisite } = req.body;
 
-        if (!course || !prerequisite) {
-            return res.status(400).json({
-                status: 'fail',
-                message: 'Both course and prerequisite are required.'
-            });
-        }
-
-        const exists = await Prerequisite.findOne({ course, prerequisite });
-
-        if (exists) {
-            return res.status(400).json({
-                status: 'fail',
-                message: 'This prerequisite already exists for the course.'
-            });
-        }
-
-        const newPrerequisite = await Prerequisite.create({ course, prerequisite });
-
-        res.status(201).json({
-            status: 'success',
-            data: { prerequisite: newPrerequisite }
-        });
-    } catch (err) {
-        res.status(400).json({ status: 'fail', message: err.message });
+    if (!course || !prerequisite) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Both course and prerequisite are required.'
+      });
     }
+
+    const exists = await Prerequisite.findOne({ course, prerequisite });
+
+    if (exists) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'This prerequisite already exists for the course.'
+      });
+    }
+
+    const newPrerequisite = await Prerequisite.create({ course, prerequisite });
+
+    // ✅ أضف الـ prerequisite داخل كورس course
+    await Course.findByIdAndUpdate(course, {
+      $addToSet: { prerequisite: prerequisite }
+    });
+
+    res.status(201).json({
+      status: 'success',
+      data: { prerequisite: newPrerequisite }
+    });
+
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
 };
+
 
 exports.getAllPrerequisites = async (req, res) => {
     try {

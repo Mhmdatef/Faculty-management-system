@@ -84,7 +84,6 @@ const studentSchema = new mongoose.Schema(
       ref: "RegisteredCourse",
       required : false
       ,
-      unique: true // Ensure each registered course is unique
     }],
     GPA: {
       type: Number,
@@ -104,7 +103,6 @@ const studentSchema = new mongoose.Schema(
       {
         type: Schema.Types.ObjectId,
         ref: 'CompletedCourse',
-        unique: true, // Ensure each completed course is unique
       }
     ]
     ,   
@@ -119,10 +117,13 @@ const studentSchema = new mongoose.Schema(
       default: 144,
       min: [0, '❌ Reminder credits cannot be less than 0'],
       max: [144, '❌ Reminder credits cannot exceed 144']
-    }
-
+    },
+  recomerndedCourseSchema :[{
+    type: Schema.Types.ObjectId,
+    ref: 'recommendedCourse',
+    required: false
+  }]
   },
-
   
 {
   timestamps: true,

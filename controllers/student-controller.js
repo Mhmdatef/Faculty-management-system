@@ -29,40 +29,40 @@ exports.getAllStudents = async (req, res) => {
     const studentsWithDetails = await Promise.all(
       students.map(async (student) => {
         const completedCourses = await CompletedCourse.find({ student: student._id })
-          .populate('course'); 
-          
-        const activities = await Activities.find({ student: student._id })
+          .populate('course');
+
+        const activities = await Activities.find({ student: student._id });
+
         const registeredCourses = await RegisteredCourse.find({ student: student._id })
           .populate('courses');
 
-
         const formattedCompleted = completedCourses.map(entry => ({
-          courseName: entry.course.name,
+          courseName: entry.course ? entry.course.name : 'Unknown Course',
           grade: entry.grade,
           completedDate: entry.completedDate,
-          courseId: entry.course._id,
-          courseCode: entry.course.code
+          courseId: entry.course ? entry.course._id : null,
+          courseCode: entry.course ? entry.course.code : 'N/A'
         }));
 
-const formattedRegistered = registeredCourses.map(entry => ({
-  courseName: entry.courses.name,
-  courseId: entry.courses._id,
-  courseCode: entry.courses.code,
-  creditHours: entry.courses.creditHours,
-}));
-
+        const formattedRegistered = registeredCourses.map(entry => ({
+          courseName: entry.courses ? entry.courses.name : 'Unknown Course',
+          courseId: entry.courses ? entry.courses._id : null,
+          courseCode: entry.courses ? entry.courses.code : 'N/A',
+          creditHours: entry.courses ? entry.courses.creditHours : 0,
+        }));
 
         const formattedActivities = activities.map(activity => ({
           activityName: activity.name,
           description: activity.description,
           date: activity.date,
-          type: activity.type}));
+          type: activity.type
+        }));
 
         return {
           ...student,
           completedCourses: formattedCompleted,
-          registeredCourses: formattedRegistered
-            , activities: formattedActivities
+          registeredCourses: formattedRegistered,
+          activities: formattedActivities
         };
       })
     );
@@ -78,7 +78,6 @@ const formattedRegistered = registeredCourses.map(entry => ({
     res.status(500).json({ status: 'fail', message: err.message });
   }
 };
-
 
 exports.updateOneStudent = async (req, res) => {
     try {
