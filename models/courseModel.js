@@ -23,11 +23,10 @@ const courseSchema = new mongoose.Schema({
         required: [true, 'Term is required'],
         min: [1, 'Term must be at least 1']
     },
-    department: {
+    department: [{
         type: Schema.Types.ObjectId,
         ref: 'Department',        
-        default: "general"
-    },
+    }],
     prerequisite: [{
         type: Schema.Types.ObjectId,
         ref: 'Course',

@@ -4,9 +4,11 @@ const Department = require('../models/departmentModel');
 
 exports.addCourse = async (req, res) => {
   try {
-    const { name , code , department, prerequisite } = req.body;
+    let { name, code, department, prerequisite } = req.body;
 
- 
+    // توحيد الاسم والكود
+    const normalizedName = name.trim().replace(/\s+/g, ' ').toLowerCase();
+    const normalizedCode = code.trim().toUpperCase();
 
     // التأكد من وجود القسم
     const existDepartment = await Department.findById(department);
@@ -31,8 +33,8 @@ exports.addCourse = async (req, res) => {
     // التأكد من عدم وجود كورس بنفس الاسم أو الكود
     const existingCourse = await Course.findOne({
       $or: [
-        { name: name.trim() },
-        { code: code.toUpperCase() }    
+        { name: { $regex: `^${normalizedName}$`, $options: 'i' } },
+        { code: normalizedCode }
       ]
     });
 
@@ -43,8 +45,13 @@ exports.addCourse = async (req, res) => {
       });
     }
 
-    // إنشاء الكورس الجديد
-    const newCourse = await Course.create(req.body);
+    // إنشاء الكورس الجديد بعد تعديل الاسم والكود
+    const newCourse = await Course.create({
+      ...req.body,
+      name: normalizedName,
+      code: normalizedCode
+    });
+
     // إضافة الكورس للقسم
     existDepartment.courses.push(newCourse._id);
     await existDepartment.save();
@@ -173,4 +180,43 @@ exports.getCourseByName = async (req, res) => {
             message: err.message
         });
     }
+};
+exports.assignCourseToDepartment = async (req, res) => {
+  try {
+    const { courseId, departmentId } = req.body;
+
+    // 1. تأكد أن الكورس والقسم موجودين
+    const course = await Course.findById(courseId);
+    const department = await Department.findById(departmentId);
+
+    if (!course || !department) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Course or Department not found'
+      });
+    }
+
+    // 2. تأكد إن القسم مش مكرر جوه الكورس
+    if (!course.department.includes(department._id)) {
+      course.department.push(department._id);
+      await course.save();
+    }
+
+    // 3. تأكد إن الكورس مش مكرر جوه القسم
+    if (!department.courses.includes(course._id)) {
+      department.courses.push(course._id);
+      await department.save();
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Course assigned to department successfully'
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      status: 'fail',
+      message: err.message
+    });
+  }
 };

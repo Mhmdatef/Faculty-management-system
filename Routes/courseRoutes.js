@@ -202,6 +202,42 @@ router
  *       404:
  *         description: course not found.
  */
+/**
+ * @swagger
+ * /api/v1/courses/assign-to-department:
+ *   post:
+ *     summary: Assign a course to a department
+ *     description: Assign an existing course to a department (only "student_affairs" can do this).
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - courseId
+ *               - departmentId
+ *             properties:
+ *               courseId:
+ *                 type: string
+ *                 description: The ID of the course
+ *               departmentId:
+ *                 type: string
+ *                 description: The ID of the department
+ *     responses:
+ *       200:
+ *         description: Course successfully assigned to department
+ *       404:
+ *         description: Course or department not found
+ */
+router.post(
+  '/assign-to-department',
+  courseController.assignCourseToDepartment
+);
+
 
 router.get('/course/:name', courseController.getCourseByName);    
 
