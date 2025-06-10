@@ -118,7 +118,7 @@ const studentSchema = new mongoose.Schema(
       min: [0, '❌ Reminder credits cannot be less than 0'],
       max: [144, '❌ Reminder credits cannot exceed 144']
     },
-  recomerndedCourseSchema :[{
+  recommendedCourses :[{
     type: Schema.Types.ObjectId,
     ref: 'recommendedCourse',
     required: false

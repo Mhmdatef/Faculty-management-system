@@ -2,7 +2,7 @@ const mongoose=require('mongoose')
 const {Schema}=require('mongoose')
 const recommendedCourseSchema = new mongoose.Schema({
   
-   courses :[{
+   courses:[{
     type: Schema.Types.ObjectId,
     ref:'Course'
 }] 
@@ -16,4 +16,4 @@ const recommendedCourseSchema = new mongoose.Schema({
 ,    { timestamps: true }
 )
 const recommendedCourses = mongoose.model('recommendedCourses', recommendedCourseSchema);
-module.exports = recommendedCourse;
+module.exports = recommendedCourses;

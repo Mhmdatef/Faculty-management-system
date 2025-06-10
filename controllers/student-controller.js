@@ -1,9 +1,8 @@
 const Student = require('../models/studentModel');
-const APIFeatures = require('./../utils/apiFeatures');
-const Activities = require('../models/activityModel');
+  const Activities = require('../models/activityModel');
 const  RegisteredCourse = require('../models/registerCourseModel');
 const CompletedCourse = require('../models/completedCourseModel');
-const bcrypt = require('bcryptjs');  // استيراد مكتبة bcrypt
+const bcrypt = require('bcryptjs');  
 const createToken = require('./../utils/create.token');
 const XLSX = require('xlsx');
 const fs = require('fs');
@@ -78,7 +77,142 @@ exports.getAllStudents = async (req, res) => {
     res.status(500).json({ status: 'fail', message: err.message });
   }
 };
+exports.getOneStudentByID = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id).lean();
 
+    if (!student) {
+      return res.status(404).json({ status: 'fail', message: 'Student not found' });
+    }
+
+    const completedCourses = await CompletedCourse.find({ student: student._id })
+      .populate('course');
+
+    const registeredCourses = await RegisteredCourse.find({ student: student._id })
+      .populate('courses');
+
+    const activities = await Activities.find({ student: student._id });
+
+    const formattedCompleted = completedCourses.map(entry => ({
+      courseName: entry.course ? entry.course.name : 'Unknown Course',
+      grade: entry.grade,
+      completedDate: entry.completedDate,
+      courseId: entry.course ? entry.course._id : null,
+      courseCode: entry.course ? entry.course.code : 'N/A'
+    }));
+
+    const formattedRegistered = registeredCourses.flatMap(entry => {
+      if (Array.isArray(entry.courses)) {
+        return entry.courses.map(c => ({
+          courseName: c.name,
+          courseId: c._id,
+          courseCode: c.code,
+          creditHours: c.creditHours,
+        }));
+      } else if (entry.courses) {
+        return [{
+          courseName: entry.courses.name,
+          courseId: entry.courses._id,
+          courseCode: entry.courses.code,
+          creditHours: entry.courses.creditHours,
+        }];
+      }
+      return [];
+    });
+
+    const formattedActivities = activities.map(activity => ({
+      activityName: activity.name,
+      description: activity.description,
+      date: activity.date,
+      type: activity.type
+    }));
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        ...student,
+        completedCourses: formattedCompleted,
+        registeredCourses: formattedRegistered,
+        activities: formattedActivities
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: 'error', message: 'Something went wrong' });
+  }
+};
+
+// الدالة التي تقوم بإرجاع الطالب بناءً على الاسم
+exports.getOneStudentByName = async (req, res) => {
+  try {
+    const { name } = req.params;
+
+    const student = await Student.findOne({ name }).lean();
+    if (!student) {
+      return res.status(404).json({
+        status: 'fail',
+        message: `Student with name ${name} not found`
+      });
+    }
+
+    const completedCourses = await CompletedCourse.find({ student: student._id })
+      .populate('course');
+
+    const registeredCourses = await RegisteredCourse.find({ student: student._id })
+      .populate('courses');
+
+    const activities = await Activities.find({ student: student._id });
+
+    const formattedCompleted = completedCourses.map(entry => ({
+      courseName: entry.course ? entry.course.name : 'Unknown Course',
+      grade: entry.grade,
+      completedDate: entry.completedDate,
+      courseId: entry.course ? entry.course._id : null,
+      courseCode: entry.course ? entry.course.code : 'N/A'
+    }));
+
+    const formattedRegistered = registeredCourses.flatMap(entry => {
+      if (Array.isArray(entry.courses)) {
+        return entry.courses.map(c => ({
+          courseName: c.name,
+          courseId: c._id,
+          courseCode: c.code,
+          creditHours: c.creditHours,
+        }));
+      } else if (entry.courses) {
+        return [{
+          courseName: entry.courses.name,
+          courseId: entry.courses._id,
+          courseCode: entry.courses.code,
+          creditHours: entry.courses.creditHours,
+        }];
+      }
+      return [];
+    });
+
+    const formattedActivities = activities.map(activity => ({
+      activityName: activity.name,
+      description: activity.description,
+      date: activity.date,
+      type: activity.type
+    }));
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        ...student,
+        completedCourses: formattedCompleted,
+        registeredCourses: formattedRegistered,
+        activities: formattedActivities
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: 'error', message: 'Something went wrong' });
+  }
+};
 exports.updateOneStudent = async (req, res) => {
     try {
         const updatedStudent = await Student.findByIdAndUpdate(req.params.id, req.body, {
@@ -122,58 +256,7 @@ exports.deleteOneStudent = async (req, res) => {
     }
 };
 
-exports.getOneStudentByID = async (req, res) => {
-  try {
-    const student = await Student.findById(req.params.id).lean();
 
-    if (!student) {
-      return res.status(404).json({ status: 'fail', message: 'Student not found' });
-    }
-
-    const completedCourses = await CompletedCourse.find({ student: student._id })
-      .populate('course')
-
-    const registeredCourses = await RegisteredCourse.find({ student: student._id })
-.populate({ path: 'courses'})
-const activities = await Activities.find({ student: student._id });
-
-    const formattedCourses = completedCourses.map(entry => ({
-      courseName: entry.course.name,
-      grade: entry.grade,
-      copletedDate: entry.completedDate,
-      courseId: entry.course._id,
-      courseCode: entry.course.code
-    }));
-const formattedActivities = activities.map(activity => ({
-  activityName: activity.name,
-  description: activity.description,
-  date: activity.date,
-  type: activity.type
-}));
-        const formattedRegistered = registeredCourses.map(entry =>
-          entry.courses.map(c => ({
-            courseName: c.name,
-            courseId: c._id,
-            courseCode: c.code,
-            creditHours: c.creditHours,
-          }))
-        );
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        ...student,
-        completedCourses: formattedCourses,
-        registerdCourses: formattedRegistered
-        , activities: formattedActivities
-      }
-    });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ status: 'error', message: 'Something went wrong' });
-  }
-};
 exports.getExistStudent = async (studentId) => {
     try {
         const student  = await Student.findById(studentId)
@@ -269,67 +352,4 @@ exports.importStudentsFromExcel = async (req, res) => {
 
       res.status(500).json({ status: 'fail', message: err.message });
     }
-};
-
-// الدالة التي تقوم بإرجاع الطالب بناءً على الاسم
-exports.getOneStudentByName = async (req, res) => {
-  try {
-    const { name } = req.params;
-
-    const student = await Student.findOne({ name }).lean();
-    if (!student) {
-      return res.status(404).json({
-        status: 'fail',
-        message: `Student with name ${name} not found`
-      });
-    }
-
-    const completedCourses = await CompletedCourse.find({ student: student._id })
-      .populate('course');
-
-const activities = await Activities.find({ student: student._id });
-    const registeredCourses = await RegisteredCourse.find({ student: student._id })
-      .populate('courses');
-
-    const formattedCompleted = completedCourses.map(entry => ({
-      courseName: entry.course.name,
-      grade: entry.grade,
-      completedDate: entry.completedDate,
-      courseId: entry.course._id,
-      courseCode: entry.course.code
-    }));
-    const formattedActivities = activities.map(activity => ({
-      activityName: activity.name,
-      description: activity.description,
-      date: activity.date,
-      type: activity.type
-    }));
-
-      const formattedRegistered = registeredCourses.map(entry =>
-          entry.courses.map(c => ({
-            courseName: c.name,
-            courseId: c._id,
-            courseCode: c.code,
-            creditHours: c.creditHours,
-          }))
-        );
-
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        ...student,
-        completedCourses: formattedCompleted,
-        registeredCourses: formattedRegistered
-        , activities: formattedActivities
-      }
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      status: 'fail',
-      message: 'Server error, please try again later'
-    });
-  }
 };

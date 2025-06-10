@@ -56,7 +56,6 @@ const router = express.Router();
  *         description: The student was successfully created.
  *       400:
  *         description: Validation error.
- * /api/v1/students:
  *   get:
  *     summary: Get all students
  *     tags: [Students]
@@ -68,27 +67,7 @@ const router = express.Router();
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                   name:
- *                     type: string
- *                   level:
- *                     type: number
- *                   studentID:
- *                     type: number
- *                   totalCreditsCompleted:
- *                     type: number
- *                   email:
- *                     type: string
- *                   phone:
- *                     type: string
- *                   gender:
- *                     type: string
- *                   dateOfBirth:
- *                     type: string
- *                     format: date
+ *                 $ref: '#/components/schemas/Student'
  *       500:
  *         description: Server error
  */
