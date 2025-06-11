@@ -42,13 +42,24 @@ exports.getAllStudents = async (req, res) => {
           courseId: entry.course ? entry.course._id : null,
           courseCode: entry.course ? entry.course.code : 'N/A'
         }));
-
-        const formattedRegistered = registeredCourses.map(entry => ({
-          courseName: entry.courses ? entry.courses.name : 'Unknown Course',
-          courseId: entry.courses ? entry.courses._id : null,
-          courseCode: entry.courses ? entry.courses.code : 'N/A',
-          creditHours: entry.courses ? entry.courses.creditHours : 0,
+ const formattedRegistered = registeredCourses.flatMap(entry => {
+      if (Array.isArray(entry.courses)) {
+        return entry.courses.map(c => ({
+          courseName: c.name,
+          courseId: c._id,
+          courseCode: c.code,
+          creditHours: c.creditHours,
         }));
+      } else if (entry.courses) {
+        return [{
+          courseName: entry.courses.name,
+          courseId: entry.courses._id,
+          courseCode: entry.courses.code,
+          creditHours: entry.courses.creditHours,
+        }];
+      }
+      return [];
+    });
 
         const formattedActivities = activities.map(activity => ({
           activityName: activity.name,

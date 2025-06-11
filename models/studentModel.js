@@ -61,7 +61,6 @@ const studentSchema = new mongoose.Schema(
     phone: {
       type: String,
       required: [true, '❌ Phone number is required'],
-      match: [/^01[0-9]{9}$/, '❌ Phone number must be a valid Egyptian number'],
     },
     dateOfBirth: {
       type: Date,

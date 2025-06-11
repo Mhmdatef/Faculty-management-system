@@ -1,7 +1,7 @@
 const registeredCourses = require('../models/registerCourseModel');
 const APIFeatures = require('../utils/apiFeatures');
 const { getExistStudent } = require('./student-controller');
-
+const Course = require('../models/courseModel');
 exports.addCourse = async (req, res) => {
     try {
         const { student, courses } = req.body;  // جلب student و course
@@ -12,6 +12,13 @@ exports.addCourse = async (req, res) => {
                 message: 'student and course fields are required'
             });
         }
+        const courseExists = await Course.findOne({ _id: { $in: courses } });
+if (!courseExists) {
+    return res.status(404).json({
+        status: 'fail',
+        message: 'One or more courses do not exist'
+    });
+}
 
         let exist_student = await getExistStudent(student);
 
