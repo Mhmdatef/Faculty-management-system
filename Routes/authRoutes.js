@@ -13,10 +13,10 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/login:
+ * /api/v1/control/login:
  *   post:
- *     summary: User login
- *     description: Allows users to log in to the system using their credentials.
+ *     summary: Control staff login
+ *     description: Allows control staff to log in to the system using their credentials.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -27,11 +27,11 @@ const router = express.Router();
  *             properties:
  *               email:
  *                 type: string
- *                 description: User's email address
- *                 example: user@example.com
+ *                 description: Control staff email
+ *                 example: control@example.com
  *               password:
  *                 type: string
- *                 description: User's password
+ *                 description: Password
  *                 example: password123
  *     responses:
  *       200:
@@ -43,26 +43,90 @@ const router = express.Router();
  *               properties:
  *                 token:
  *                   type: string
- *                   description: Auth token for the user
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SkNjDjO1I64OtYwfp-FW5bAsXt-4oDNXw7kl9t9RzL_w"
+ *                   example: "your-jwt-token"
  *       400:
  *         description: Invalid email or password
  *       404:
  *         description: User not found
  */
-router
-    .route('/control/login')
 
-    .post(controlAuthController.log_in);
-router
-    .route('/activity_staff/login')
+/**
+ * @swagger
+ * /api/v1/activity_staff/login:
+ *   post:
+ *     summary: Activity staff login
+ *     description: Allows activity staff to log in to the system using their credentials.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: activity@example.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Successfully logged in and token returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: "your-jwt-token"
+ *       400:
+ *         description: Invalid email or password
+ *       404:
+ *         description: User not found
+ */
 
-    .post(ActivityStaffAuthController.log_in);
-router
-    .route('/affairs/login')
+/**
+ * @swagger
+ * /api/v1/affairs/login:
+ *   post:
+ *     summary: Affairs staff login
+ *     description: Allows affairs staff to log in to the system using their credentials.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: affairs@example.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Successfully logged in and token returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: "your-jwt-token"
+ *       400:
+ *         description: Invalid email or password
+ *       404:
+ *         description: User not found
+ */
 
-    .post(affairsAuthController.log_in);        
-
-    
+// Routes
+router.route('/control/login').post(controlAuthController.log_in);
+router.route('/activity_staff/login').post(ActivityStaffAuthController.log_in);
+router.route('/affairs/login').post(affairsAuthController.log_in);
 
 module.exports = router;
