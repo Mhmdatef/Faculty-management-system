@@ -138,7 +138,16 @@ studentSchema.pre('save', async function (next) {
     this.passwordConfirm = undefined; // remove passwordConfirm from the database
     next();
 })
-
+studentSchema.methods.correctPassword = async function (candidatePassword, studentPassword) {
+    return await bycrypt.compare(candidatePassword, studentPassword);
+};
+studentSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+    if (this.passwordChanged) {
+        const changedTimestamp = parseInt(this.passwordChanged.getTime() / 1000, 10);
+        return JWTTimestamp < changedTimestamp;
+    }
+    return false; // false means not changed
+};
 
 const Student = mongoose.model('Student', studentSchema);
 

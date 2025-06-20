@@ -76,7 +76,7 @@ router.route('/')
   studentController.addOneStudent)
   .get(         
   studentController.getAllStudents);
-
+router.route('/updatePassword').patch(middleware.studentProtect,studentController.updatePassword);
 /**
  * @swagger
  * /api/v1/students/{id}:
@@ -190,8 +190,9 @@ router.get('/student/:name'  ,       middleware.protect,middleware.restrictTo("s
 router.route('/:id')
   .get(      
   studentController.getOneStudentByID)
-  .patch(          middleware.protect,middleware.restrictTo("student_affairs"),
+  .patch(middleware.protect,middleware.restrictTo("student_affairs"),
   studentController.updateOneStudent)
+
   .delete(          middleware.protect,middleware.restrictTo("student_affairs"),
   studentController.deleteOneStudent);
 

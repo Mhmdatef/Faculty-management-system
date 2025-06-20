@@ -365,3 +365,33 @@ exports.importStudentsFromExcel = async (req, res) => {
     res.status(500).json({ status: 'fail', message: err.message });
   }
 };
+
+exports.updatePassword = async (request, response, next) => {
+    const { currentPassword, newPassword, confirmNewPassword } = request.body;
+// Validate input
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+        return response.status(400).send("Please provide all required fields");
+    }
+// Check if new password and confirm password match
+    if (newPassword !== confirmNewPassword) {
+        return response.status(400).send("Passwords do not match");
+    }
+// Find the student member by ID and include the password field
+    const student = await Student.findById(request.student._id).select('+password');
+
+    if (!student) {
+        return response.status(404).send("student not found");
+    }
+// Check if the current password is correct
+    const isCurrentPasswordCorrect = await bcrypt.compare(currentPassword, student.password);
+    if (!isCurrentPasswordCorrect) {
+        return new AppError("Current password is incorrect", 401);
+    }
+
+    //update password
+    student.password = newPassword;
+    student.passwordConfirm = confirmNewPassword;
+    await student.save();
+//
+    await createToken(student, 200, response);
+};

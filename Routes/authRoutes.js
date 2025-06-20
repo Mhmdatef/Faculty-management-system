@@ -3,6 +3,7 @@ const controlAuthController = require('../controllers/controlAuthController.js')
 const ActivityStaffAuthController = require('../controllers/ActivityStaffAuthController.js');
 const affairsAuthController = require('../controllers/affairsAuthController.js');
 const router = express.Router();
+const middleware = require('../middleware/protect.js');
 
 /**
  * @swagger
@@ -128,5 +129,7 @@ const router = express.Router();
 router.route('/control/login').post(controlAuthController.log_in);
 router.route('/activity_staff/login').post(ActivityStaffAuthController.log_in);
 router.route('/affairs/login').post(affairsAuthController.log_in);
+// router.route('/control/forgot_password').post(controlAuthController.forgot_password);
+router.route('/staff/update_password').patch(middleware.protect, controlAuthController.updatePassword);
 
 module.exports = router;

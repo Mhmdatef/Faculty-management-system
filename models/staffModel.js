@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const validate = require('validator');
 const bycrypt = require('bcryptjs');
 
@@ -43,6 +44,8 @@ const staffSchema = new mongoose.Schema({
             message: 'Passwords are not the same!'
         }
     },
+    passwordResetToken: String,
+    passwordResetExpires: Date, 
     passwordChangedAt: Date,
 }, { timestamps: true });
 staffSchema.pre('save', async function (next) {
@@ -60,6 +63,17 @@ staffSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
         return JWTTimestamp < changedTimestamp;
     }
     return false; // false means not changed
+};
+staffSchema.methods.createPasswordResetToken = function () {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    this.passwordResetToken =crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+    console.log({resetToken}, 
+        this.passwordResetToken);
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    return resetToken; 
 };
 const Staff = mongoose.model('Staff', staffSchema);
 module.exports = Staff;

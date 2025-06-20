@@ -1,4 +1,5 @@
 const staffDb = require('../models/staffModel');
+const studentDb = require('../models/studentModel');
 const {promisify} = require('util');
 const jwt = require('jsonwebtoken');
 const catchAsync = require('./../utils/catchAsync');
@@ -39,6 +40,7 @@ exports.protect = catchAsync(async (request, response, next) => {
     // 5) Attach staff data to request object (without password)
     staff.password = undefined;
     request.staff = staff;
+    console.log();
     
     // Proceed to next middleware
     next();
@@ -53,3 +55,41 @@ exports.restrictTo = (...roles) => {
         next();
     };
 }
+exports.studentProtect = catchAsync(async (request, response, next) => {
+    let token;
+    
+    // 1) Extract token from authorization header
+    if (
+        request.headers.authorization &&
+        request.headers.authorization.startsWith('Bearer')
+    ) {
+        token = request.headers.authorization.split(' ')[1];
+    }
+    console.log(token);
+    // If no token found, return authentication error
+    if (!token) {
+        return next(new AppError('You are not logged in', 401));
+    }
+
+    // 2) Verify token validity using secret key
+    const token_data = await (jwt.verify)(token, process.env.SECRET);
+    console.log(token_data);
+
+    // 3) Check if staff member still exists in database
+    const student = await studentDb.findById(token_data.id);
+    if (!student) {
+        return next(new AppError('The student member associated with this token no longer exists', 401));
+    }
+
+    // // 4) Verify if password was changed after token was issued
+   if (student.changedPasswordAfter(token_data.iat)) {
+        return next(new AppError('Password was recently changed. Please log in again', 401));
+     }
+
+    // 5) Attach staff data to request object (without password)
+    student.password = undefined;
+    request.student = student;
+    
+    // Proceed to next middleware
+    next();
+});
