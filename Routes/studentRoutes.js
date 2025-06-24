@@ -17,39 +17,14 @@ const router = express.Router();
  *   post:
  *     summary: Add a new student
  *     tags: [Students]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               level:
- *                 type: number
- *               studentID:
- *                 type: number
- *               totalCreditsCompleted:
- *                 type: number
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               passwordConfirm:
- *                 type: string
- *               phone:
- *                 type: string
- *               dateOfBirth:
- *                 type: string
- *                 format: date
- *               gender:
- *                 type: string
- *                 enum: [Male, Female]
- *               registerdCourses:
- *                 type: array
- *                 items:
- *                   type: string
+ *             $ref: '#/components/schemas/StudentInput'
  *     responses:
  *       201:
  *         description: The student was successfully created.
@@ -70,13 +45,41 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-
 router.route('/')
-  .post(          middleware.protect,middleware.restrictTo("student_affairs"),
-  studentController.addOneStudent)
-  .get(         
-  studentController.getAllStudents);
-router.route('/updatePassword').patch(middleware.studentProtect,studentController.updatePassword);
+  .post(middleware.protect, middleware.restrictTo("student_affairs"), studentController.addOneStudent)
+  .get(studentController.getAllStudents);
+
+/**
+ * @swagger
+ * /api/v1/students/updatePassword:
+ *   patch:
+ *     summary: Update student password
+ *     tags: [Students]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *               confirmNewPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully.
+ *       400:
+ *         description: Bad request.
+ *       401:
+ *         description: Unauthorized.
+ */
+router.route('/updatePassword').patch(middleware.studentProtect, studentController.updatePassword);
+
 /**
  * @swagger
  * /api/v1/students/{id}:
@@ -87,12 +90,11 @@ router.route('/updatePassword').patch(middleware.studentProtect,studentControlle
  *       - in: path
  *         name: id
  *         required: true
- *         description: The student ID
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: The student details.
+ *         description: Student details retrieved.
  *       404:
  *         description: Student not found.
  *   patch:
@@ -102,7 +104,6 @@ router.route('/updatePassword').patch(middleware.studentProtect,studentControlle
  *       - in: path
  *         name: id
  *         required: true
- *         description: The student ID to update
  *         schema:
  *           type: string
  *     requestBody:
@@ -110,41 +111,12 @@ router.route('/updatePassword').patch(middleware.studentProtect,studentControlle
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 description: The name of the student
- *               level:
- *                 type: number
- *                 description: The level of the student
- *               studentID:
- *                 type: number
- *                 description: The unique student ID
- *               totalCreditsCompleted:
- *                 type: number
- *                 description: The total credits the student has completed
- *               email:
- *                 type: string
- *                 description: The student's email
- *               phone:
- *                 type: string
- *                 description: The student's phone number
- *               dateOfBirth:
- *                 type: string
- *                 format: date
- *                 description: The student's date of birth
- *               gender:
- *                 type: string
- *                 description: The student's gender
- *                 enum:
- *                   - Male
- *                   - Female
+ *             $ref: '#/components/schemas/StudentInput'
  *     responses:
  *       200:
- *         description: The student was successfully updated.
+ *         description: Student updated.
  *       400:
- *         description: Error updating student.
+ *         description: Error updating.
  *       404:
  *         description: Student not found.
  *   delete:
@@ -154,15 +126,18 @@ router.route('/updatePassword').patch(middleware.studentProtect,studentControlle
  *       - in: path
  *         name: id
  *         required: true
- *         description: The student ID to delete
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: The student was successfully deleted.
+ *         description: Student deleted.
  *       404:
  *         description: Student not found.
  */
+router.route('/:id')
+  .get(studentController.getOneStudentByID)
+  .patch(middleware.protect, middleware.restrictTo("student_affairs"), studentController.updateOneStudent)
+  .delete(middleware.protect, middleware.restrictTo("student_affairs"), studentController.deleteOneStudent);
 
 /**
  * @swagger
@@ -174,33 +149,21 @@ router.route('/updatePassword').patch(middleware.studentProtect,studentControlle
  *       - in: path
  *         name: name
  *         required: true
- *         description: The student name
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: The student details.
+ *         description: Student details retrieved.
  *       404:
  *         description: Student not found.
  */
-
-router.get('/student/:name'  ,       middleware.protect,middleware.restrictTo("student_affairs")
-, studentController.getOneStudentByName);
-
-router.route('/:id')
-  .get(      
-  studentController.getOneStudentByID)
-  .patch(middleware.protect,middleware.restrictTo("student_affairs"),
-  studentController.updateOneStudent)
-
-  .delete(          middleware.protect,middleware.restrictTo("student_affairs"),
-  studentController.deleteOneStudent);
+router.get('/student/:name', middleware.protect, middleware.restrictTo("student_affairs"), studentController.getOneStudentByName);
 
 /**
  * @swagger
  * /api/v1/students/login:
  *   post:
- *     summary: Log in a student
+ *     summary: Student login
  *     tags: [Students]
  *     requestBody:
  *       required: true
@@ -211,29 +174,27 @@ router.route('/:id')
  *             properties:
  *               email:
  *                 type: string
- *                 description: The email of the student
  *               password:
  *                 type: string
- *                 description: The password of the student
  *     responses:
  *       200:
- *         description: Successfully logged in and received a token.
+ *         description: Login successful.
  *       400:
- *         description: Invalid email or password.
+ *         description: Invalid credentials.
  */
-router.route('/login')
-  .post( 
-  studentController.log_in);
+router.route('/login').post(studentController.log_in);
 
-// إعداد Multer لرفع الملفات
+// Multer setup
 const upload = multer({ dest: 'uploads/' });
 
 /**
  * @swagger
  * /api/v1/students/upload:
  *   post:
- *     summary: Upload an Excel file with student data
+ *     summary: Upload students via Excel file
  *     tags: [Students]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -244,14 +205,12 @@ const upload = multer({ dest: 'uploads/' });
  *               file:
  *                 type: string
  *                 format: binary
- *                 description: The Excel file containing student data
  *     responses:
  *       200:
- *         description: Students uploaded successfully
+ *         description: Upload successful.
  *       400:
- *         description: Bad request or invalid Excel data
+ *         description: Invalid file.
  */
-router.post('/upload',           middleware.protect,middleware.restrictTo("student_affairs"),
-upload.single('file'), studentController.importStudentsFromExcel);
+router.post('/upload', middleware.protect, middleware.restrictTo("student_affairs"), upload.single('file'), studentController.importStudentsFromExcel);
 
 module.exports = router;

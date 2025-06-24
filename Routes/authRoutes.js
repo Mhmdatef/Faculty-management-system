@@ -124,12 +124,47 @@ const middleware = require('../middleware/protect.js');
  *       404:
  *         description: User not found
  */
+/**
+ * @swagger
+ * /api/v1/staff/update_password:
+ *   patch:
+ *     summary: Update staff password
+ *     description: Allows a logged-in staff member to update their password.
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: oldpass123
+ *               newPassword:
+ *                 type: string
+ *                 example: newpass456
+ *               confirmNewPassword:
+ *                 type: string
+ *                 example: newpass456
+ *     responses:
+ *       200:
+ *         description: Password updated successfully and new token returned
+ *       400:
+ *         description: Bad request (e.g., passwords don’t match)
+ *       401:
+ *         description: Unauthorized (e.g., invalid or expired token)
+ *       404:
+ *         description: Staff not found
+ */
+
 
 // Routes
 router.route('/control/login').post(controlAuthController.log_in);
 router.route('/activity_staff/login').post(ActivityStaffAuthController.log_in);
 router.route('/affairs/login').post(affairsAuthController.log_in);
-// router.route('/control/forgot_password').post(controlAuthController.forgot_password);
 router.route('/staff/update_password').patch(middleware.protect, controlAuthController.updatePassword);
 
 module.exports = router;

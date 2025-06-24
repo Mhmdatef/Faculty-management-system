@@ -39,7 +39,6 @@ exports.getAllStudents = async (req, res) => {
         const completedCourses = await CompletedCourse.find({ student: student._id })
           .populate('course');
 
-        const activities = await Activities.find({ student: student._id });
 
         const registeredCourses = await RegisteredCourse.find({ student: student._id })
           .populate('courses');
@@ -63,19 +62,12 @@ exports.getAllStudents = async (req, res) => {
           }))
         );
 
-        const formattedActivities = activities.map(activity => ({
-          _id: activity._id,
-          activityName: activity.name,
-          description: activity.description,
-          date: activity.date,
-          type: activity.type
-        }));
+        
 
         return {
           ...student,
           completedCourses: formattedCompleted,
           registeredCourses: formattedRegistered,
-          activities: formattedActivities
         };
       })
     );
@@ -105,7 +97,6 @@ exports.getOneStudentByID = async (req, res) => {
     const registeredCourses = await RegisteredCourse.find({ student: student._id })
       .populate('courses');
 
-    const activities = await Activities.find({ student: student._id });
 
     const formattedCompleted = completedCourses.map(entry => ({
       courseName: entry.course ? entry.course.name : 'Unknown Course',
@@ -134,12 +125,7 @@ exports.getOneStudentByID = async (req, res) => {
       return [];
     });
 
-    const formattedActivities = activities.map(activity => ({
-      activityName: activity.name,
-      description: activity.description,
-      date: activity.date,
-      type: activity.type
-    }));
+ 
 
     res.status(200).json({
       status: 'success',
@@ -147,7 +133,6 @@ exports.getOneStudentByID = async (req, res) => {
         ...student,
         completedCourses: formattedCompleted,
         registeredCourses: formattedRegistered,
-        activities: formattedActivities
       }
     });
 
@@ -176,7 +161,6 @@ exports.getOneStudentByName = async (req, res) => {
     const registeredCourses = await RegisteredCourse.find({ student: student._id })
       .populate('courses');
 
-    const activities = await Activities.find({ student: student._id });
 
     const formattedCompleted = completedCourses.map(entry => ({
       courseName: entry.course ? entry.course.name : 'Unknown Course',
@@ -205,12 +189,7 @@ exports.getOneStudentByName = async (req, res) => {
       return [];
     });
 
-    const formattedActivities = activities.map(activity => ({
-      activityName: activity.name,
-      description: activity.description,
-      date: activity.date,
-      type: activity.type
-    }));
+ 
 
     res.status(200).json({
       status: 'success',
@@ -218,7 +197,6 @@ exports.getOneStudentByName = async (req, res) => {
         ...student,
         completedCourses: formattedCompleted,
         registeredCourses: formattedRegistered,
-        activities: formattedActivities
       }
     });
 

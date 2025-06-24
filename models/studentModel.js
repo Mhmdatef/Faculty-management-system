@@ -130,6 +130,17 @@ const studentSchema = new mongoose.Schema(
   
   
 );
+studentSchema.pre(/^find/,async function (next) {
+this.populate({
+path: 'department',
+select: 'name -_id' // Exclude _id field from the populated department
+}).populate(
+{
+path: 'activities',
+select: 'type description -_id', // Exclude _id field from the populated registeredCourses
+})
+next();
+})
 
 
 studentSchema.pre('save', async function (next) {
